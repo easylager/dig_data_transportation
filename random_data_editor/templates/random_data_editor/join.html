@@ -1,0 +1,25 @@
+{% extends 'random_data_editor/base.html' %}
+{% load crispy_forms_tags %}
+{% block title %}Join{% endblock %}
+{% block content %}
+ <div class="px-4 py-5 my-5 text-center">
+    <h1 class="display-5 fw-bold">Choose option</h1>
+    <div class="col-lg-6 mx-auto">
+      <p class="lead mb-4">All 100 files were merged into one, that called 'full_data.txt'
+</p>
+        <h4>Now you have option to clean lines with some specific string you choose</h4>
+        <p>Write down a string:</p>
+        <form action='' method="POST" novalidate>
+            {% csrf_token %}
+            <div class="form-group">
+                  {{ form|crispy }}
+            </div>
+            <p></p>
+            <button type="submit" class="btn btn-primary">Delete lines</button>
+       </form>
+      <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+        <a href="{{ employee.get_update_url }}" class="btn btn-success">Skip</a>
+      </div>
+    </div>
+  </div>
+{% endblock %}
