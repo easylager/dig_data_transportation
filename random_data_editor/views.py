@@ -2,7 +2,10 @@ from django.shortcuts import render, HttpResponse
 import os
 from django.views.generic import View
 from django import forms
-from .utils import *
+import sqlite3
+import sys
+import re
+#from .utils import *
 
 
 #абсолютные пути до основных директорый, используемых далее
@@ -10,6 +13,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 FILES_DIR = os.path.join(BASE_DIR, 'random_data_editor', 'files')
 FULL_DATA_DIR = os.path.join(BASE_DIR, 'random_data_editor', 'full_data.txt')
 CLEAN_DATA_DIR = os.path.join(BASE_DIR, 'random_data_editor', 'clean_data.txt')
+DB_PATH = os.path.join(BASE_DIR, 'db.sqlite3')
 
 #форма для запроса строки
 class CleanForm(forms.Form):
@@ -30,7 +34,7 @@ def file_generator(path=FILES_DIR):
                string = random_string() + '\n'
                file.write(string)
 
-file_generator()
+#file_generator()
 
 
 class Join_files(View):
@@ -45,15 +49,16 @@ class Join_files(View):
         form = CleanForm()
         return render(request, 'random_data_editor/join.html', context={'form': form})
 
+
     def post(self, request):
         bound_form = CleanForm(request.POST)
         if bound_form.is_valid():
             string = bound_form.cleaned_data['string']
-            print('FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF', string)
             lines_before, lines_after = clean_files(string=string)
             print(string)
             return render(request, 'random_data_editor/after_clean.html', context={'lines_before': lines_before, 'lines_after': lines_after})
         return render(request, 'random_data_editor/join.html', context={'form': bound_form})
+
 
 def clean_files(string: str, input=FULL_DATA_DIR, output=CLEAN_DATA_DIR):
     lines_before = f'before clean: {count_lines(input)}'
@@ -71,4 +76,25 @@ def clean_files(string: str, input=FULL_DATA_DIR, output=CLEAN_DATA_DIR):
 def count_lines(path):
     res = sum(1 for line in open(path, 'r'))
     return res
+
+
+
+def import_db(request, db=DB_PATH):
+    conn = sqlite3.connect(db)
+    cu = conn.cursor()
+    cu.execute('''create table if not exists randomdata
+    (date VARCHAR(255), eng VARCHAR(255), rus VARCHAR(255), number VARCHAR(255), float VARCHAR(255))''')
+    with open(FULL_DATA_DIR, 'r+') as f1:
+        n = 1
+        lines = f1.readlines()
+        lines = list(filter(lambda x: not re.match(r'^\s*$', x), lines))
+        m = len(lines)
+        for line in lines:
+            content_list = re.split('//', line)[:-1]
+            cu.execute('insert into randomdata(date, eng, rus, number, float) values(?,?,?,?,?);', content_list)
+            n += 1
+        conn.commit()
+        conn.close()
+        return render(request, 'random_data_editor/import_to_db.html', context={'n': n - 1, 'm': m})
+
 

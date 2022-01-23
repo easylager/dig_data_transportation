@@ -3,6 +3,10 @@ import datetime
 from datetime import datetime as dt
 import random
 import string
+import sys
+import re
+import sqlite3
+
 russian_alphabet = 'АаБбВвГгДдЕеЁёЖжЗзИиЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЪъЫыЬьЭэЮюЯя'
 
 def create_directory(path=os.path.curdir + '/' + 'files'):
@@ -76,19 +80,41 @@ def join_files():
 
 
 
-def clean_files(slug: str, input, output):
-    print(f'before clean: {count_lines(input)}')
-    if input:
-        with open(input, 'r') as input:
-            with open(output, 'w') as out:
-                lines = input.readlines()
-                for line in lines:
-                    if slug not in line:
-                        out.write(f'{line}')
-    print(f'after clean: {count_lines(output)}')
-    return 'all data has been cleaned'
 
 
-#clean_files('БВзЦ', './full_data.txt', './clean_data.txt')
+def import_db(db):
+    conn = sqlite3.connect(db)
+    cu = conn.cursor()
+    cu.execute('''create table randomdata
+    (date VARCHAR(255), eng VARCHAR(255), rus VARCHAR(255), number VARCHAR(255), float VARCHAR(255))''')
+    with open('full_data.txt', 'r') as f1:
+        n = 1
+        lines = f1.readlines()
+        m = len(lines)
+        lines = filter(lambda x: not re.match(r'^\s*$', x), lines)
+        for line in lines:
+            content_list = re.split('//', line)[:-1]
+            if len(line):
+                cu.execute('insert into randomdata(date, eng, rus, number, float) values(?,?,?,?,?);', content_list)
+                print(f'[Import Progress: {n}/{m}]')
+                n += 1
+        conn.commit()
+        conn.close()
 
-#join_files()
+#import_db('./database.db')
+
+def count_lines(file):
+    with open(file, 'r') as f:
+        lines = f.readlines()
+        return len(lines)
+
+number = count_lines('./full_data.txt')
+print(type(number))
+def count_numbers(db):
+    conn = sqlite3.connect(db)
+    cu = conn.cursor()
+    res = cu.execute('''select sum(number) from randomdata;''')
+    #cu.execute('select sum(float)/(?) as mediana from randomdata;', number)
+    return res
+
+print(count_numbers('./database.db'))
