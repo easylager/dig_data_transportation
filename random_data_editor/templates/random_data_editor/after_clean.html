@@ -1,0 +1,21 @@
+{% extends 'random_data_editor/base.html' %}
+{% block title %}Data have been cleaned{% endblock %}
+{% block content %}
+<div class="px-4 py-5 my-5 text-center">
+    <h1 class="display-5 fw-bold">Choose option</h1>
+    <div class="col-lg-6 mx-auto">
+      <p class="lead mb-4">Нужные строки были удалены</p>
+        <h3>Results:</h3>
+        <ul>
+            <li>Lines before cleaning: {{ lines_before }}</li>
+            <li>Lines after cleaning: {{ lines_after }}</li>
+        </ul>
+      <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+
+        <a href="{% url 'home_page_url' %}" class="btn btn-success">Back</a>
+        <a href="{{ employee.get_update_url }}" class="btn btn-success">Import into database</a>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+

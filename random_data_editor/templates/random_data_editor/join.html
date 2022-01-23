@@ -9,7 +9,7 @@
 </p>
         <h4>Now you have option to clean lines with some specific string you choose</h4>
         <p>Write down a string:</p>
-        <form action='' method="POST" novalidate>
+        <form action='{% url "join_files_url" %}' method="POST" novalidate>
             {% csrf_token %}
             <div class="form-group">
                   {{ form|crispy }}

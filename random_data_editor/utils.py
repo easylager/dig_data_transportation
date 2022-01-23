@@ -17,7 +17,7 @@ print(create_directory())
 dir_ = './files'
 
 
-
+#
 def random_date_gen():
     start_date = datetime.date(2017, 1, 26)
     end_date = datetime.date(2022, 1, 26)
@@ -74,9 +74,6 @@ def join_files():
             f.write('\n')
     return 'all files have been joined'
 
-def count_lines(path):
-    res = sum(1 for line in open(path, 'r'))
-    return res
 
 
 def clean_files(slug: str, input, output):
