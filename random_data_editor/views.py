@@ -5,7 +5,7 @@ from django import forms
 import sqlite3
 import sys
 import re
-#from .util import random_numeric_full
+from .utils import *
 
 
 #абсолютные пути до основных директорый, используемых далее
@@ -23,7 +23,8 @@ class CleanForm(forms.Form):
 def home_page(request):
     return render(request, 'random_data_editor/base.html')
 
-
+#функция генерирует 100 файлов с заданым содержанием(каждая строчка - это результат работы функции random_string
+#функция random_string - это результат работы 5 функций, генерирующих случайный набор символов, каждая функция имеет свою облость данных
 def file_generator(path=FILES_DIR):
     n = 1
     for i in range(1, 10):
@@ -36,7 +37,8 @@ def file_generator(path=FILES_DIR):
 
 #file_generator()
 
-
+#класс наследуется от встроенного в фреймворк метакласса View, метод get иполняет обьединение
+#всех файлов из директории files/ в один и возвращает форму, для ввода пользователем строки, строки содержащие которую будут удалены
 class Join_files(View):
     def get(self, request):
         files_list = [i for i in os.listdir(FILES_DIR) if i.endswith('.txt')]
@@ -49,13 +51,12 @@ class Join_files(View):
         form = CleanForm()
         return render(request, 'random_data_editor/join.html', context={'form': form})
 
-
+#метод post очищает форму, валидирует, подсчитывет количество строк в файле до очисти и после и фозвращает полученный значения в html шаблон
     def post(self, request):
         bound_form = CleanForm(request.POST)
         if bound_form.is_valid():
             string = bound_form.cleaned_data['string']
             lines_before, lines_after = clean_files(string=string)
-            print(string)
             return render(request, 'random_data_editor/after_clean.html', context={'lines_before': lines_before, 'lines_after': lines_after})
         return render(request, 'random_data_editor/join.html', context={'form': bound_form})
 
@@ -78,7 +79,8 @@ def count_lines(path):
     return res
 
 
-
+#Создается таблица в базе данных, если запрос выполняется впервые,
+# иначе таблица очищается и  в нее импортируется все данные из файла 'full_data.txt'
 def import_db(request, db=DB_PATH):
     conn = sqlite3.connect(db)
     cu = conn.cursor()
@@ -100,13 +102,17 @@ def import_db(request, db=DB_PATH):
         return render(request, 'random_data_editor/import_to_db.html', context={'n': n - 1, 'm': m})
 
 
+#в функции устанавливается связь с базой данный, в которой находится таблица, где собрана вся информация из 100 файлов
 def sum_and_median(request, db=DB_PATH):
     conn = sqlite3.connect(db)
     cu = conn.cursor()
+    #запрос на получение суммы всех целых чисел
     cu.execute('select sum(number) from randomdata')
     sum = cu.fetchone()[0]
+    #запрос на получение медианы всех дробных чисел
     cu.execute('select float from (select float from randomdata order by float desc limit (select count(*) from randomdata)/2) as mediana_table order by float desc limit 1;')
     median = cu.fetchone()[0]
+    #функция возвращает сумму и медиану в html шаблон
     return render(request, 'random_data_editor/sum_and_median.html', context={'sum': sum, 'median': median})
 #import_db()
 #print(sum_numbers(db=DB_PATH))
