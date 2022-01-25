@@ -1,0 +1,21 @@
+{% extends 'random_data_editor/base.html' %}
+{% load crispy_forms_tags %}
+{% block title %}Sum and median{% endblock %}
+{% block content %}
+ <div class="px-4 py-5 my-5 text-center">
+    <h1 class="display-5 fw-bold">SQL request results</h1>
+    <div class="col-lg-6 mx-auto">
+      <p class="lead mb-4">Based on the current data in the database, the sum of all integers and the median of all fractional numbers were calculated
+</p>
+        <h4>This SQL request is repeatable</h4>
+      <ul>
+        <li>Sum of integers: {{ sum }}</li>
+        <li>Median of fractional numbers: {{ median }}</li>
+      </ul>
+      <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+        <a href="{% url 'home_page_url' %}" class="btn btn-success">Back</a>
+        <a href="{% url 'join_files_url' %}" class="btn btn-success">Join</a>
+      </div>
+    </div>
+  </div>
+{% endblock %}

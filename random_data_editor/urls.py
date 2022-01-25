@@ -6,5 +6,6 @@ urlpatterns = [
     path('', home_page, name='home_page_url'),
     path('join/', Join_files.as_view(), name='join_files_url'),
     path('clean/', Join_files.as_view(), name='clean_files_url'),
-    path('import/', import_db, name='import_files_url')
+    path('import/', import_db, name='import_files_url'),
+    path('sum_and_median/', sum_and_median, name='sum_and_median_url')
     ]

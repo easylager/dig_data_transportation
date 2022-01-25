@@ -5,7 +5,7 @@ from django import forms
 import sqlite3
 import sys
 import re
-#from .utils import *
+#from .util import random_numeric_full
 
 
 #абсолютные пути до основных директорый, используемых далее
@@ -84,6 +84,7 @@ def import_db(request, db=DB_PATH):
     cu = conn.cursor()
     cu.execute('''create table if not exists randomdata
     (date VARCHAR(255), eng VARCHAR(255), rus VARCHAR(255), number VARCHAR(255), float VARCHAR(255))''')
+    cu.execute('delete from randomdata')
     with open(FULL_DATA_DIR, 'r+') as f1:
         n = 1
         lines = f1.readlines()
@@ -91,6 +92,7 @@ def import_db(request, db=DB_PATH):
         m = len(lines)
         for line in lines:
             content_list = re.split('//', line)[:-1]
+
             cu.execute('insert into randomdata(date, eng, rus, number, float) values(?,?,?,?,?);', content_list)
             n += 1
         conn.commit()
@@ -98,3 +100,13 @@ def import_db(request, db=DB_PATH):
         return render(request, 'random_data_editor/import_to_db.html', context={'n': n - 1, 'm': m})
 
 
+def sum_and_median(request, db=DB_PATH):
+    conn = sqlite3.connect(db)
+    cu = conn.cursor()
+    cu.execute('select sum(number) from randomdata')
+    sum = cu.fetchone()[0]
+    cu.execute('select float from (select float from randomdata order by float desc limit (select count(*) from randomdata)/2) as mediana_table order by float desc limit 1;')
+    median = cu.fetchone()[0]
+    return render(request, 'random_data_editor/sum_and_median.html', context={'sum': sum, 'median': median})
+#import_db()
+#print(sum_numbers(db=DB_PATH))
