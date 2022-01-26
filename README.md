@@ -24,10 +24,10 @@
 ### Фрагмент базы данных после импорта дынных
 ![Альтернативный текст](./random_data_editor/screenshots/database.png)
 ### Веб интерфейс
-![Альтернативный текст](./random_data_editor/screenshots/interface_1.png)
+![Альтернативный текст](./random_data_editor/screenshots/interaface_1.png)
 ---
-![Альтернативный текст](./random_data_editor/screenshots/interface_2.png)
+![Альтернативный текст](./random_data_editor/screenshots/interaface_2.png)
 ---
-![Альтернативный текст](./random_data_editor/screenshots/interface_3.png)
+![Альтернативный текст](./random_data_editor/screenshots/interaface_3.png)
 ---
-![Альтернативный текст](./random_data_editor/screenshots/interface_4.png)
+![Альтернативный текст](./random_data_editor/screenshots/interaface_4.png)
