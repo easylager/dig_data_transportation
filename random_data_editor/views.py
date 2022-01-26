@@ -27,15 +27,15 @@ def home_page(request):
 #функция random_string - это результат работы 5 функций, генерирующих случайный набор символов, каждая функция имеет свою облость данных
 def file_generator(path=FILES_DIR):
     n = 1
-    for i in range(1, 10):
+    for i in range(1, 101):
         print(f'{n}/101')
         n += 1
         with open(os.path.join(path, f'{i}.txt'), 'w') as file:
-            for j in range(1, 100):
+            for j in range(1, 100000):
+               print(f'{j}/100000')
                string = random_string() + '\n'
                file.write(string)
 
-#file_generator()
 
 #класс наследуется от встроенного в фреймворк метакласса View, метод get иполняет обьединение
 #всех файлов из директории files/ в один и возвращает форму, для ввода пользователем строки, строки содержащие которую будут удалены
@@ -43,9 +43,9 @@ class Join_files(View):
     def get(self, request):
         files_list = [i for i in os.listdir(FILES_DIR) if i.endswith('.txt')]
         files_list.sort()
-        with open('full_data.txt', 'w') as join_file:
+        with open('full_data.txt', 'w', encoding='utf-8') as join_file:
             for j in files_list:
-                s = open(f'{FILES_DIR}/{j}').read()
+                s = open(f'{FILES_DIR}/{j}', encoding='utf-8').read()
                 join_file.write(s)
                 join_file.write('\n')
         form = CleanForm()
@@ -64,8 +64,8 @@ class Join_files(View):
 def clean_files(string: str, input=FULL_DATA_DIR, output=CLEAN_DATA_DIR):
     lines_before = f'before clean: {count_lines(input)}'
     if input:
-        with open(input, 'r+') as ipt:
-            with open(output, 'w') as otp:
+        with open(input, 'r+', encoding='utf-8') as ipt:
+            with open(output, 'w', encoding='utf-8') as otp:
                 lines = ipt.readlines()
                 for line in lines:
                     if string not in line:
@@ -75,7 +75,7 @@ def clean_files(string: str, input=FULL_DATA_DIR, output=CLEAN_DATA_DIR):
 
 
 def count_lines(path):
-    res = sum(1 for line in open(path, 'r'))
+    res = sum(1 for line in open(path, 'r', encoding='utf-8'))
     return res
 
 
@@ -87,7 +87,7 @@ def import_db(request, db=DB_PATH):
     cu.execute('''create table if not exists randomdata
     (date VARCHAR(255), eng VARCHAR(255), rus VARCHAR(255), number VARCHAR(255), float VARCHAR(255))''')
     cu.execute('delete from randomdata')
-    with open(FULL_DATA_DIR, 'r+') as f1:
+    with open(FULL_DATA_DIR, 'r+', encoding='utf-8') as f1:
         n = 1
         lines = f1.readlines()
         lines = list(filter(lambda x: not re.match(r'^\s*$', x), lines))

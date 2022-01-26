@@ -7,7 +7,9 @@ import sys
 import re
 import sqlite3
 
+
 russian_alphabet = 'АаБбВвГгДдЕеЁёЖжЗзИиЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЪъЫыЬьЭэЮюЯя'
+
 
 def create_directory(path=os.path.curdir + '/' + 'files'):
     if not os.path.exists(path):
@@ -27,7 +29,6 @@ def random_date_gen():
     return res
 
 
-
 def random_alpha_rus():
     res_str = ''
     for i in range(1, 11):
@@ -35,14 +36,11 @@ def random_alpha_rus():
     return res_str
 
 
-
 def random_alpha_eng():
     res_str = ''
     for i in range(1, 11):
         res_str += str(random.choice(string.ascii_letters))
     return res_str
-
-
 
 
 def random_numeric_full():
@@ -59,6 +57,21 @@ def random_string():
     return res
 
 
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+FILES_DIR = os.path.join(BASE_DIR, 'random_data_editor', 'files')
+
+
+def file_generator(path=FILES_DIR):
+    n = 1
+    for i in range(1, 11):
+        print(f'{n}/101')
+        n += 1
+        with open(os.path.join(path, f'{i}.txt'), 'w') as file:
+            for j in range(1, 100):
+               print(f'{j}/100000')
+               string = random_string() + '\n'
+               file.write(string)
+#file_generator()
 
 def join_files():
     ls = [i for i in os.listdir('./files') if i.endswith('.txt')]
